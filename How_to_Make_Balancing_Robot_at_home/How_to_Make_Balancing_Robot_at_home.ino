@@ -1,16 +1,16 @@
-//youtube.com/TARUNKUMARDAHAKE
-//facebook.com/TARUNKUMARDAHAKE
-
+  
 #include <PID_v1.h>
 #include <LMotorController.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 
+
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+
 #include "Wire.h"
 #endif
 
-#define MIN_ABS_SPEED 50
+#define MIN_ABS_SPEED 30
 
 MPU6050 mpu;
 
@@ -28,19 +28,19 @@ VectorFloat gravity; // [x, y, z] gravity vector
 float ypr[3]; // [yaw, pitch, roll] yaw/pitch/roll container and gravity vector
 
 //PID
-double originalSetpoint = 173;
+double originalSetpoint = 174;//165 lo mueve
 double setpoint = originalSetpoint;
 double movingAngleOffset = 0.1;
 double input, output;
 
 //adjust these values to fit your own design
-double Kp = 60;   
-double Kd = 1.4 ;
-double Ki = 70;
+double Kp = 30; // 0 - 100   
+double Kd = 1.6; // 0 - 200
+double Ki = 160; // 0 - 2
 PID pid(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
-double motorSpeedFactorLeft = 0.9;
-double motorSpeedFactorRight = 0.9;
+double motorSpeedFactorLeft = 0.52;
+double motorSpeedFactorRight = 0.50;
 //MOTOR CONTROLLER
 int ENA = 5;
 int IN1 = 6;
@@ -48,6 +48,12 @@ int IN2 = 7;
 int IN3 = 8;
 int IN4 = 9;
 int ENB = 10;
+
+int i= 0;
+boolean flag = true;
+
+
+
 LMotorController motorController(ENA, IN1, IN2, ENB, IN3, IN4, motorSpeedFactorLeft, motorSpeedFactorRight);
 
 volatile bool mpuInterrupt = false; // indicates whether MPU interrupt pin has gone high
@@ -68,14 +74,14 @@ Fastwire::setup(400, true);
 #endif
 
 mpu.initialize();
-
+Serial.begin(115200);
 devStatus = mpu.dmpInitialize();
 
 // supply your own gyro offsets here, scaled for min sensitivity
 mpu.setXGyroOffset(220);
 mpu.setYGyroOffset(76);
 mpu.setZGyroOffset(-85);
-mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+mpu.setZAccelOffset(1688); // 1688 factory default for my test chip
 
 // make sure it worked (returns 0 if so)
 if (devStatus == 0)
@@ -117,13 +123,45 @@ void loop()
 if (!dmpReady) return;
 
 // wait for MPU interrupt or extra packet(s) available
+
+
+
+
+
+i++;
+Serial.println(i);
+if(i %50 == 0) {
+  flag = !flag;
+}
+
+Serial.println(flag);
+
+
+if(!flag){
+  double originalSetpoint2 = 172;//165 lo mueve
+  double setpoint2 = originalSetpoint2;
+  pid.setpoint(&setpoint2);
+  Serial.println("asjkd");
+}
+else{
+  pid.setpoint(&originalSetpoint);
+}
+
+
+
 while (!mpuInterrupt && fifoCount < packetSize)
 {
 //no mpu data - performing PID calculations and output to motors 
-pid.Compute();
-motorController.move(output, MIN_ABS_SPEED);
+        pid.Compute();
+        motorController.move(output,output, MIN_ABS_SPEED);
+        
+ 
 
+  //motorController.move(100,100,MIN_ABS_SPEED);
+  
 }
+
+Serial.println("afuerita");
 
 // reset interrupt flag and get INT_STATUS byte
 mpuInterrupt = false;
