@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">batboti</string>
+    <string name = "conectar">Conectar</string>
+    <string name = "auto2">Piloto Automático</string>
+    <string name = "status">Estado Bluetooth: </string>
+    <string name = "statusText">Desconectado</string>
+    <string name ="learn">Aprender Ruta</string>
+</resources>
