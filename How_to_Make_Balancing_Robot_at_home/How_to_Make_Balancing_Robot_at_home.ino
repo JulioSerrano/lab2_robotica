@@ -36,11 +36,11 @@ double input, output;
 //adjust these values to fit your own design
 double Kp = 30; // 0 - 100   
 double Kd = 1.6; // 0 - 200
-double Ki = 160; // 0 - 2
+double Ki = 150; // 0 - 2
 PID pid(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
-double motorSpeedFactorLeft = 0.52;
-double motorSpeedFactorRight = 0.50;
+double motorSpeedFactorLeft = 0.60; //lenta
+double motorSpeedFactorRight = 0.55;
 //MOTOR CONTROLLER
 int ENA = 5;
 int IN1 = 6;
@@ -127,41 +127,41 @@ if (!dmpReady) return;
 
 
 
-
+/*
 i++;
 Serial.println(i);
 if(i %50 == 0) {
   flag = !flag;
 }
 
-Serial.println(flag);
 
 
 if(!flag){
-  double originalSetpoint2 = 172;//165 lo mueve
+  double originalSetpoint2 = 169;//165 lo mueve
   double setpoint2 = originalSetpoint2;
   pid.setpoint(&setpoint2);
-  Serial.println("asjkd");
+  //Serial.println("asjkd");
 }
 else{
   pid.setpoint(&originalSetpoint);
 }
-
+*/
 
 
 while (!mpuInterrupt && fifoCount < packetSize)
 {
 //no mpu data - performing PID calculations and output to motors 
         pid.Compute();
-        motorController.move(output,output, MIN_ABS_SPEED);
-        
- 
+        if(output < 25 && output > 0 ){ // cuando se encuentra estable(vertical) aumenta la velocidad de la ruedas
+          Serial.println(output);
+          motorController.move(output*10,MIN_ABS_SPEED);
+        }
 
-  //motorController.move(100,100,MIN_ABS_SPEED);
-  
+        else{
+           motorController.move(output,MIN_ABS_SPEED);
+        }
+   
 }
-
-Serial.println("afuerita");
 
 // reset interrupt flag and get INT_STATUS byte
 mpuInterrupt = false;
