@@ -31,13 +31,17 @@ float ypr[3]; // [yaw, pitch, roll] yaw/pitch/roll container and gravity vector
 double originalSetpoint = 174;//165 lo mueve
 double setpoint = originalSetpoint;
 double movingAngleOffset = 0.1;
-double input, output;
+double input, output, outputSpeed, inputSpeed;
 
 //adjust these values to fit your own design
 double Kp = 30; // 0 - 100   
 double Kd = 1.6; // 0 - 200
 double Ki = 150; // 0 - 2
 PID pid(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
+double KpSpeed = 45; // 0 - 100   
+double KdSpeed = 1.8; // 0 - 200
+double KiSpeed = 135; // 0 - 2
+PID pidSpeed(&inputSpeed, &outputSpeed, &setpoint, KpSpeed, KiSpeed, KdSpeed, DIRECT);
 
 double motorSpeedFactorLeft = 0.60; //lenta
 double motorSpeedFactorRight = 0.55;
@@ -150,11 +154,12 @@ else{
 
 while (!mpuInterrupt && fifoCount < packetSize)
 {
+  motorController.move(outputSpeed*10,MIN_ABS_SPEED);
 //no mpu data - performing PID calculations and output to motors 
         pid.Compute();
         if(output < 25 && output > 0 ){ // cuando se encuentra estable(vertical) aumenta la velocidad de la ruedas
           Serial.println(output);
-          motorController.move(output*10,MIN_ABS_SPEED);
+          motorController.move(outputSpeed*10,MIN_ABS_SPEED);
         }
 
         else{
@@ -195,5 +200,6 @@ mpu.dmpGetQuaternion(&q, fifoBuffer);
 mpu.dmpGetGravity(&gravity, &q);
 mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
 input = ypr[1] * 180/M_PI + 180;
+inputSpeed = ypr[1] * 180/M_PI + 180;
 }
 }
