@@ -43,12 +43,14 @@ void PID::setKp(double Kp){
 
 void PID::setKd(double Kd){
   dispKd = Kd;
-  kd = Kd;
+  double SampleTimeInSec = ((double)SampleTime)/1000;
+  kd = Kd / SampleTimeInSec;
 }
 
 void PID::setKi(double Ki){
   dispKi = Ki;
-  ki = Ki;
+  double SampleTimeInSec = ((double)SampleTime)/1000;
+  ki = Ki * SampleTimeInSec;
 }
 
 /* Compute() **********************************************************************
