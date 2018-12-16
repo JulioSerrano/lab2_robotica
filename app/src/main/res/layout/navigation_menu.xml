@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <item android:title="Menu">
+
+        <menu>
+
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/Home"
+                    android:icon="@drawable/ic_home_black_24dp"
+                    android:textSize="16dp"
+                    android:title="Home"
+                    ></item>
+
+                <item
+                    android:id="@+id/calibrar"
+                    android:icon="@drawable/ic_keyboard_black_24dp"
+                    android:textSize="16dp"
+                    android:title="Calibrar"
+                    >
+
+                </item>
+            </group>
+        </menu>
+    </item>
+</menu>

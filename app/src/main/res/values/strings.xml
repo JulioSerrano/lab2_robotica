@@ -5,4 +5,8 @@
     <string name = "status">Estado Bluetooth: </string>
     <string name = "statusText">Desconectado</string>
     <string name ="learn">Aprender Ruta</string>
+    <string name = "kp">Kp</string>
+    <string name = "kd">Kd</string>
+    <string name = "Ki">Ki</string>
+    <string name = "point">Setpoint</string>
 </resources>
