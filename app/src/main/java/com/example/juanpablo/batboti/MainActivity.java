@@ -189,7 +189,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void foward(View view){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(1).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)1;
+                aux1[1] = (byte)1;
+                byte[] aux = "1".getBytes();
+                mbluetoothSocket.getOutputStream().write(aux1);
+                System.out.println("wdadas");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -199,7 +204,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void toRight(View view){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(2).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)2;
+                aux1[1] = (byte)2;
+                byte[] aux = "2".getBytes();
+                mbluetoothSocket.getOutputStream().write(aux1);
+                System.out.println("wdadas");
             } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -209,7 +219,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void toLeft(View view){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(3).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)3;
+                aux1[1] = (byte)3;
+                byte[] aux = "3".getBytes();
+
+                mbluetoothSocket.getOutputStream().write(aux1);
+                System.out.println("wdadas");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -219,7 +235,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void down(View view){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(4).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)4;
+                aux1[1] = (byte)4;
+                byte[] aux = "4".getBytes();
+                mbluetoothSocket.getOutputStream().write(aux1);
+                System.out.println("wdadas");
             } catch (IOException e) {
                 e.printStackTrace();
             }
