@@ -121,8 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void calibrarView(View view){
-        CalibrarActivity ca = new CalibrarActivity(mbluetoothSocket);
-        Intent i = new Intent(this,ca.getClass());
+        myBluetoothSocket.setBSocket(mbluetoothSocket);
+        Intent i = new Intent(getApplicationContext(),CalibrarActivity.class);
+
         startActivity(i);
     }
 

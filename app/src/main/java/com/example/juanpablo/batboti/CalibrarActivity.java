@@ -22,7 +22,7 @@ import java.io.IOException;
 
 public class CalibrarActivity extends AppCompatActivity {
 
-    BluetoothSocket mbluetoothSocket;
+    private static BluetoothSocket mbluetoothSocket;
 
     TextView kp;
     TextView kd;
@@ -43,11 +43,6 @@ public class CalibrarActivity extends AppCompatActivity {
     int MAX_SP = 360;
     int MIN_SP = 0;
 
-
-    public CalibrarActivity(BluetoothSocket bs){
-        this.mbluetoothSocket = bs;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -57,6 +52,7 @@ public class CalibrarActivity extends AppCompatActivity {
         kdBarConfig();
         kiBarConfig();
         spBarConfig();
+        mbluetoothSocket = myBluetoothSocket.getBSocket();
 
     }
 
@@ -94,7 +90,7 @@ public class CalibrarActivity extends AppCompatActivity {
     public void kdBarConfig(){
         kdBar = (SeekBar)findViewById(R.id.kd_bar);
         kd = (TextView)findViewById(R.id.kd_text);
-        kd.setText(kdBar.getProgress()+"/2");
+        kd.setText(kdBar.getProgress()+"/200");
 
         kdBar.setOnSeekBarChangeListener(
 
@@ -103,7 +99,7 @@ public class CalibrarActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         progressValue = progress;
-                        kd.setText(progress+"/2");
+                        kd.setText(progress+"/200");
                     }
 
                     @Override
@@ -113,7 +109,7 @@ public class CalibrarActivity extends AppCompatActivity {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        kd.setText(progressValue+"/2");
+                        kd.setText(progressValue+"/200");
                         setKd();
                     }
                 }
@@ -181,7 +177,10 @@ public class CalibrarActivity extends AppCompatActivity {
     private void setKp(){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(kpBar.getProgress()).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)5;
+                aux1[1] = (byte)kpBar.getProgress();
+                mbluetoothSocket.getOutputStream().write(aux1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -191,6 +190,10 @@ public class CalibrarActivity extends AppCompatActivity {
     private void setKd(){
         if(mbluetoothSocket!=null){
             try{
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)6;
+                aux1[1] = (byte)kdBar.getProgress();
+                mbluetoothSocket.getOutputStream().write(aux1);
                 mbluetoothSocket.getOutputStream().write(String.valueOf(kdBar.getProgress()).getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -201,7 +204,10 @@ public class CalibrarActivity extends AppCompatActivity {
     private void setKi(){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(kiBar.getProgress()).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)7;
+                aux1[1] = (byte)kiBar.getProgress();
+                mbluetoothSocket.getOutputStream().write(aux1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -211,7 +217,10 @@ public class CalibrarActivity extends AppCompatActivity {
     private void setSp(){
         if(mbluetoothSocket!=null){
             try{
-                mbluetoothSocket.getOutputStream().write(String.valueOf(spBar.getProgress()).getBytes());
+                byte[] aux1  = new byte[2];
+                aux1[0] = (byte)8;
+                aux1[1] = (byte)spBar.getProgress();
+                mbluetoothSocket.getOutputStream().write(aux1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
