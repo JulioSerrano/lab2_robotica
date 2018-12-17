@@ -1,8 +1,8 @@
-  
 #include <PID_v1.h>
 #include <LMotorController.h>
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
+#include <SoftwareSerial.h>
 
 
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
@@ -13,6 +13,10 @@
 #define MIN_ABS_SPEED 30
 
 MPU6050 mpu;
+
+int bluetoothTx = 11;
+int bluetoothRx = 12;
+SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 
 // MPU control/status vars
 bool dmpReady = false; // set true if DMP init was successful
@@ -27,22 +31,44 @@ Quaternion q; // [w, x, y, z] quaternion container
 VectorFloat gravity; // [x, y, z] gravity vector
 float ypr[3]; // [yaw, pitch, roll] yaw/pitch/roll container and gravity vector
 
+#define  Left_Enoder     0x01
+#define  Right_Enoder    0x02
+#define  Left_PWM        0x03
+#define  Right_PWM       0x04
+#define  Balance_Angle   0x05
+#define  Upright_Kp      0x06
+#define  Upright_Ki      0x07
+#define  Upright_Kd      0x08
+#define  Speed_Kp        0x09
+#define  Speed_Ki        0x10
+#define  Speed_Kd        0x0A
+#define  Rotate_Kp       0x0B
+#define  Rotate_Ki       0x0C
+#define  Rotate_Kd       0x0D
+#define  Contrl_val      0x0E
+#define  angle_output    0x0F
+#define  speed_output    0x11
+
+unsigned char a[12]={0xAA,0xAA,0xAA,0xAA,0x00,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF};
+unsigned char RxBuf[12]={0};
+
 //PID
-double originalSetpoint = 174;//165 lo mueve
+double originalSetpoint = 178;//165 lo mueve
 double setpoint = originalSetpoint;
 double movingAngleOffset = 0.1;
 double input, output, outputSpeed, inputSpeed;
 
 //adjust these values to fit your own design
 double Kp = 30; // 0 - 100   
-double Kd = 1.6; // 0 - 200
-double Ki = 150; // 0 - 2
+double Kd = 1.8; // 0 - 200
+double Ki = 135; // 0 - 2
 PID pid(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 double KpSpeed = 45; // 0 - 100   
 double KdSpeed = 1.8; // 0 - 200
 double KiSpeed = 135; // 0 - 2
 PID pidSpeed(&inputSpeed, &outputSpeed, &setpoint, KpSpeed, KiSpeed, KdSpeed, DIRECT);
 
+double turnChange;
 double motorSpeedFactorLeft = 0.60; //lenta
 double motorSpeedFactorRight = 0.55;
 //MOTOR CONTROLLER
@@ -54,6 +80,7 @@ int IN4 = 9;
 int ENB = 10;
 
 int i= 0;
+unsigned char aux4[2];
 boolean flag = true;
 
 
@@ -78,7 +105,8 @@ Fastwire::setup(400, true);
 #endif
 
 mpu.initialize();
-Serial.begin(115200);
+Serial.begin(9600);
+bluetooth.begin(9600);
 devStatus = mpu.dmpInitialize();
 
 // supply your own gyro offsets here, scaled for min sensitivity
@@ -119,7 +147,36 @@ Serial.print(devStatus);
 Serial.println(F(")"));
 }
 }
+void forward()
+{
+  double newSetpoint = originalSetpoint - 0.5;
+  //pid.setKp(Kp+5);
+  //motorController.move(output*1.5,MIN_ABS_SPEED);
+  Serial.println(pid.GetKp());
+  pid.setpoint(&newSetpoint);
+  delay(1000);
+  newSetpoint = originalSetpoint + 0.5;
+  pid.setpoint(&newSetpoint);
+}
+void backward()
+{
+  
+}
 
+void turnLeft()
+{
+  turnChange = 0.65; //lenta
+  motorSpeedFactorRight = turnChange;
+  //motorController.move(output*10, output*5, MIN_ABS_SPEED);
+  delay(1000);
+  //motorController.move(output*5, output*5, MIN_ABS_SPEED);
+  motorSpeedFactorRight = 0.55;
+  motorSpeedFactorLeft = 0.55;
+}
+void turnRight()
+{
+  motorController.move(output*5, output*10, MIN_ABS_SPEED);
+}
 
 void loop()
 {
@@ -127,44 +184,66 @@ void loop()
 if (!dmpReady) return;
 
 // wait for MPU interrupt or extra packet(s) available
-
-
-
-
-/*
-i++;
-Serial.println(i);
-if(i %50 == 0) {
-  flag = !flag;
-}
-
-
-
-if(!flag){
-  double originalSetpoint2 = 169;//165 lo mueve
-  double setpoint2 = originalSetpoint2;
-  pid.setpoint(&setpoint2);
-  //Serial.println("asjkd");
-}
-else{
-  pid.setpoint(&originalSetpoint);
-}
-*/
+// wait for MPU interrupt or extra packet(s) available
+  if(bluetooth.available() > 0){
+    //aux3 = bluetooth.read();
+    bluetooth.readBytes(aux4,2);
+    switch(aux4[0])
+    {
+      case 1:
+        Serial.println("Adelante!" + String(aux4[1]));
+        forward();
+        break;
+      case 2:
+        Serial.println("Derecha!" + String(aux4[1]));
+        motorController.turnRight(159,MIN_ABS_SPEED);
+        break;
+      case 3:
+        Serial.println("Izquierda!" + String(aux4[1]));
+        motorController.turnLeft(159,MIN_ABS_SPEED);
+        break;
+      case 4:
+        Serial.println("Atras!" + String(aux4[1]));
+        backward();
+        break;
+      case 5:
+        Serial.println("KP!" + String(aux4[1]));
+        pid.setKp(aux4[1]);
+        Serial.println(pid.GetKp());
+        break;
+      case 6:
+        Serial.println("KI!" + String(aux4[1]));
+        pid.setKi(aux4[1]);
+        Serial.println(pid.GetKi());
+        break;
+      case 7:
+        Serial.println("KD!" + String(aux4[1]));
+        pid.setKd(aux4[1]/100);
+        Serial.println(pid.GetKd());
+        break;
+      case 8:
+        Serial.println("New setpoint!" + String(aux4[1]));
+        double newSetpoint = aux4[1];
+        pid.setpoint(&newSetpoint);
+        Serial.println(newSetpoint);
+        break;
+    }
+  }
 
 
 while (!mpuInterrupt && fifoCount < packetSize)
 {
-  motorController.move(outputSpeed*10,MIN_ABS_SPEED);
 //no mpu data - performing PID calculations and output to motors 
         pid.Compute();
-        if(output < 25 && output > 0 ){ // cuando se encuentra estable(vertical) aumenta la velocidad de la ruedas
-          Serial.println(output);
-          motorController.move(outputSpeed*10,MIN_ABS_SPEED);
+        motorController.move(output,MIN_ABS_SPEED);
+        /*if(output < 25 && output > 0 ){ // cuando se encuentra estable(vertical) aumenta la velocidad de la ruedas
+          //Serial.println(output);
+          motorController.move(output*10,MIN_ABS_SPEED);
         }
 
         else{
            motorController.move(output,MIN_ABS_SPEED);
-        }
+        }*/
    
 }
 

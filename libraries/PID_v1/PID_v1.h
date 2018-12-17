@@ -51,9 +51,9 @@ class PID
 	int GetMode();						  //  inside the PID.
 	int GetDirection();
 	void setpoint(double*);					  //
-  void setKp();
-  void setKi();
-  void setKd();
+  void setKp(double);
+  void setKi(double);
+  void setKd(double);
 
   private:
 	void Initialize();
