@@ -34,14 +34,14 @@ public class CalibrarActivity extends AppCompatActivity {
     SeekBar kiBar;
     SeekBar spBar;
 
-    int MAX_KP = 100;
+    int MAX_KP = 150;
     int MIN_KP = 0;
-    int MAX_KD = 2;
+    int MAX_KD = 250;
     int MIN_KD = 0;
-    int MAX_KI = 200;
+    int MAX_KI = 500;
     int MIN_KI = 0;
-    int MAX_SP = 360;
-    int MIN_SP = 0;
+    int MAX_SP = 200;
+    int MIN_SP = 160;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -61,7 +61,7 @@ public class CalibrarActivity extends AppCompatActivity {
     public void kpBarConfig(){
         kpBar = (SeekBar)findViewById(R.id.kp_bar);
         kp = (TextView)findViewById(R.id.kp_text);
-        kp.setText(kpBar.getProgress()+"/100");
+        kp.setText(kpBar.getProgress()+"/"+MAX_KP);
 
         kpBar.setOnSeekBarChangeListener(
 
@@ -70,7 +70,7 @@ public class CalibrarActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         progressValue = progress;
-                        kp.setText(progress+"/100");
+                        kp.setText(progress+"/"+MAX_KP);
                     }
 
                     @Override
@@ -80,7 +80,7 @@ public class CalibrarActivity extends AppCompatActivity {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        kp.setText(progressValue+"/100");
+                        kp.setText(progressValue+"/"+MAX_KP);
                         setKp();
                     }
                 }
@@ -90,7 +90,7 @@ public class CalibrarActivity extends AppCompatActivity {
     public void kdBarConfig(){
         kdBar = (SeekBar)findViewById(R.id.kd_bar);
         kd = (TextView)findViewById(R.id.kd_text);
-        kd.setText(kdBar.getProgress()+"/200");
+        kd.setText(kdBar.getProgress()+"/"+MAX_KD);
 
         kdBar.setOnSeekBarChangeListener(
 
@@ -99,7 +99,7 @@ public class CalibrarActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         progressValue = progress;
-                        kd.setText(progress+"/200");
+                        kd.setText(progress+"/"+MAX_KD);
                     }
 
                     @Override
@@ -109,7 +109,7 @@ public class CalibrarActivity extends AppCompatActivity {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        kd.setText(progressValue+"/200");
+                        kd.setText(progressValue+"/"+MAX_KD);
                         setKd();
                     }
                 }
@@ -119,7 +119,7 @@ public class CalibrarActivity extends AppCompatActivity {
     public void kiBarConfig(){
         kiBar = (SeekBar)findViewById(R.id.ki_bar);
         ki = (TextView)findViewById(R.id.ki_text);
-        ki.setText(kiBar.getProgress()+"/200");
+        ki.setText(kiBar.getProgress()+"/"+MAX_KI);
 
         kiBar.setOnSeekBarChangeListener(
 
@@ -128,7 +128,7 @@ public class CalibrarActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         progressValue = progress;
-                        ki.setText(progress+"/200");
+                        ki.setText(progress+"/"+MAX_KI);
                     }
 
                     @Override
@@ -138,7 +138,7 @@ public class CalibrarActivity extends AppCompatActivity {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        ki.setText(progressValue+"/200");
+                        ki.setText(progressValue+"/"+MAX_KI);
                         setKi();
                     }
                 }
@@ -148,7 +148,7 @@ public class CalibrarActivity extends AppCompatActivity {
     public void spBarConfig(){
         spBar = (SeekBar)findViewById(R.id.sp_bar);
         sp = (TextView)findViewById(R.id.sp_text);
-        sp.setText(spBar.getProgress()+"/360");
+        sp.setText(spBar.getProgress()+"/"+MAX_SP);
 
         spBar.setOnSeekBarChangeListener(
 
@@ -157,7 +157,7 @@ public class CalibrarActivity extends AppCompatActivity {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         progressValue = progress;
-                        sp.setText(progress+"/360");
+                        sp.setText(progress+"/"+MAX_SP);
                     }
 
                     @Override
@@ -167,7 +167,7 @@ public class CalibrarActivity extends AppCompatActivity {
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        sp.setText(progressValue+"/360");
+                        sp.setText(progressValue+"/"+MAX_SP);
                         setSp();
                     }
                 }
